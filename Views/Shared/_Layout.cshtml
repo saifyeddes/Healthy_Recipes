@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"] - HealthyRecipes</title>
+    <title>@ViewData["Title"] - KoolHealthy</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -16,7 +16,7 @@
                 <div class="flex items-center space-x-2">
                     <i class="fas fa-utensils text-2xl"></i>
                     <h1 class="text-2xl font-bold">
-                        <a asp-area="" asp-controller="Home" asp-action="Index">HealthyRecipes</a>
+                        <a asp-area="" asp-controller="Home" asp-action="Index">KoolHealthy</a>
                     </h1>
                 </div>
                 <nav>
@@ -38,6 +38,7 @@
             </div>
         </div>
     </header>
+    @await Html.PartialAsync("_AlertsPartial")
 
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-8">
@@ -95,7 +96,7 @@
                 </div>
             </div>
             <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>© 2025 HealthyRecipes. Tous droits réservés.</p>
+                <p>© 2025 KoolHealthy. Tous droits réservés.</p>
             </div>
         </div>
     </footer>

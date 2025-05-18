@@ -6,7 +6,6 @@ using Healthy_Recipes.ViewModels;
 
 namespace Healthy_Recipes.Controllers
 {
-    [Authorize]
     public class AccountController : Controller
     {
         private readonly UserManager<Users> _userManager;
@@ -18,6 +17,7 @@ namespace Healthy_Recipes.Controllers
             _signInManager = signInManager;
         }
 
+        [Authorize]
         public async Task<IActionResult> Profile()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -78,6 +78,12 @@ namespace Healthy_Recipes.Controllers
                 }
             }
             return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
     }
 }

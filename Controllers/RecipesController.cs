@@ -24,10 +24,40 @@ namespace Healthy_Recipes.Controllers
         }
 
         // GET: Recipes
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchTerm = "", string category = "")
         {
-            var recipes = await _context.Recipes.ToListAsync();
-            var viewModels = recipes.Select(r => new RecipeViewModel
+            var query = _context.Recipes.AsQueryable();
+
+            // Filtrer par terme de recherche
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                query = query.Where(r => 
+                    r.Title.ToLower().Contains(searchTerm) ||
+                    r.Description.ToLower().Contains(searchTerm) ||
+                    r.Ingredients.ToLower().Contains(searchTerm) ||
+                    r.Instructions.ToLower().Contains(searchTerm));
+            }
+
+            // Filtrer par catégorie
+            if (!string.IsNullOrEmpty(category) && category != "Toutes les catégories")
+            {
+                query = query.Where(r => r.Category == category);
+            }
+
+            // Récupérer les données
+            var recipes = await query.ToListAsync();
+
+            // Tri par pertinence en mémoire
+            var sortedRecipes = recipes.OrderByDescending(r => 
+                r.Title.ToLower() == searchTerm || 
+                r.Description.ToLower() == searchTerm ||
+                r.Ingredients.ToLower() == searchTerm ||
+                r.Instructions.ToLower() == searchTerm)
+                .ThenBy(r => r.Title)
+                .ToList();
+
+            var viewModels = sortedRecipes.Select(r => new RecipeViewModel
             {
                 Id = r.Id,
                 Title = r.Title,
@@ -42,7 +72,15 @@ namespace Healthy_Recipes.Controllers
                 Fat = r.Fat,
                 ImageUrl = r.ImageUrl
             }).ToList();
-            return View(viewModels);
+
+            var searchViewModel = new RecipeSearchViewModel
+            {
+                SearchTerm = searchTerm,
+                Category = category,
+                Recipes = viewModels
+            };
+
+            return View(searchViewModel);
         }
 
         // GET: Recipes/Details/5
