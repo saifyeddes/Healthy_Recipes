@@ -10,6 +10,7 @@ namespace Healthy_Recipes.Data
             : base(options)
         {
         }
+        public DbSet<Recipe> Recipes { get; set; }
 
     }
 }

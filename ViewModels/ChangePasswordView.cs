@@ -1,24 +1,23 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Healthy_Recipes.ViewModels
 {
     public class ChangePasswordViewModel
     {
-        [Required(ErrorMessage = "Email is required.")]
+        [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Password is required.")]
-        [StringLength(40, MinimumLength = 8, ErrorMessage = "The {0} must be at {2} and at max {1} characters long.")]
+        [Required]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "New Password")]
         [Compare("ConfirmNewPassword", ErrorMessage = "Password does not match.")]
-        public string NewPassword { get; set; }
+        public string NewPassword { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Confirm Password is required.")]
         [DataType(DataType.Password)]
         [Display(Name = "Confirm New Password")]
-        public string ConfirmNewPassword { get; set; }
-
+        [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
+        public string ConfirmNewPassword { get; set; } = string.Empty;
     }
 }

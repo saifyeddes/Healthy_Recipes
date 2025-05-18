@@ -1,32 +1,35 @@
-using System.Diagnostics;
-using Healthy_Recipes.Models;
 using Microsoft.AspNetCore.Mvc;
+using Healthy_Recipes.Data;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Healthy_Recipes.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ApplicationDbContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var recipes = _context.Recipes.ToList();
+            return View(recipes);
         }
 
-        public IActionResult Privacy()
+        public IActionResult About()
         {
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpPost]
+        public async Task<IActionResult> Subscribe(string email)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            // TODO: Implémenter la logique d'inscription à la newsletter
+            return RedirectToAction("Index");
         }
     }
 }

@@ -1,12 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Healthy_Recipes.ViewModels
 {
     public class VerifyEmailViewModel
     {
-        [Required(ErrorMessage = "Email is required.")]
+        [Required]
         [EmailAddress]
-        public string Email { get; set; }
-
+        public string Email { get; set; } = string.Empty;
     }
 }
