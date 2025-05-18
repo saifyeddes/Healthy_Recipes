@@ -2,9 +2,9 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 
-namespace Healthy_Recipes.Models
+namespace Healthy_Recipes.ViewModels
 {
-    public class Recipe
+    public class RecipeViewModel
     {
         public int Id { get; set; }
 
@@ -21,6 +21,7 @@ namespace Healthy_Recipes.Models
         public int PreparationTime { get; set; }
 
         public string? ImageUrl { get; set; }
+        public IFormFile? Image { get; set; }
 
         [Required]
         public string Ingredients { get; set; } = string.Empty;
@@ -32,8 +33,5 @@ namespace Healthy_Recipes.Models
         public int Protein { get; set; }
         public int Carbohydrates { get; set; }
         public int Fat { get; set; }
-
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime? UpdatedAt { get; set; }
     }
 }

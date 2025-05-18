@@ -1,11 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
 using Healthy_Recipes.Data;
-using System.Linq;
+using Healthy_Recipes.Models;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Healthy_Recipes.ViewModels;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace Healthy_Recipes.Controllers
 {
-    public class HomeController : Controller
+        public class HomeController : Controller
     {
         private readonly ApplicationDbContext _context;
 
@@ -14,9 +18,9 @@ namespace Healthy_Recipes.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var recipes = _context.Recipes.ToList();
+            var recipes = await _context.Recipes.ToListAsync();
             return View(recipes);
         }
 
@@ -28,8 +32,16 @@ namespace Healthy_Recipes.Controllers
         [HttpPost]
         public async Task<IActionResult> Subscribe(string email)
         {
-            // TODO: Implémenter la logique d'inscription à la newsletter
-            return RedirectToAction("Index");
+            try
+            {
+                // TODO: Implémenter la logique d'inscription à la newsletter
+                await Task.Delay(1000); // Simuler une opération asynchrone
+                return RedirectToAction("Index");
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Index");
+            }
         }
     }
 }

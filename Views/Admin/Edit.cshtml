@@ -1,4 +1,4 @@
-@model Healthy_Recipes.Models.Recipe
+@model Healthy_Recipes.ViewModels.RecipeViewModel
 
 @{
     ViewData["Title"] = "Modifier la recette";
@@ -42,7 +42,7 @@
                         <p class="mb-2 text-sm text-gray-500">Cliquez pour télécharger ou glisser-déposer</p>
                         <p class="text-xs text-gray-500">PNG, JPG (Max. 5MB)</p>
                     </div>
-                    <input asp-for="Image" type="file" class="hidden" />
+                    <input name="Image" type="file" class="hidden" />
                 </label>
             </div>
             <span asp-validation-for="Image" class="text-red-600 text-sm"></span>

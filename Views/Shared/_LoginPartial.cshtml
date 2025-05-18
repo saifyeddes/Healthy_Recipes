@@ -1,26 +1,28 @@
-﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity
 @inject SignInManager<Healthy_Recipes.Models.Users> SignInManager
+@inject UserManager<Healthy_Recipes.Models.Users> UserManager
 
+<ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))
 {
-    <div class="flex items-center space-x-4">
-        <span class="text-white">Bonjour, @User.Identity.Name</span>
-        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-            @Html.AntiForgeryToken()
-            <button type="submit" class="bg-white text-green-700 px-4 py-2 rounded-full font-medium hover:bg-green-100 transition">
-                Déconnexion
-            </button>
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+            Bonjour, @(UserManager.GetUserAsync(User).Result?.FullName ?? "Utilisateur") !
+        </a>
+    </li>
+    <li class="nav-item">
+        <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+            <button type="submit" class="nav-link btn btn-link text-dark">Déconnexion</button>
         </form>
-    </div>
+    </li>
 }
 else
 {
-    <div class="flex space-x-4">
-        <a asp-controller="Account" asp-action="Login" class="bg-white text-green-700 px-4 py-2 rounded-full font-medium hover:bg-green-100 transition">
-            Connexion
-        </a>
-        <a asp-controller="Account" asp-action="Register" class="bg-white text-green-700 px-4 py-2 rounded-full font-medium hover:bg-green-100 transition">
-            Inscription
-        </a>
-    </div>
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Inscription</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Connexion</a>
+    </li>
 }
+</ul>

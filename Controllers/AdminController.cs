@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Healthy_Recipes.Data;
 using Healthy_Recipes.Models;
+using Healthy_Recipes.Data;
+using Healthy_Recipes.ViewModels;
 using System.Threading.Tasks;
+using System.Linq;
+using Microsoft.AspNetCore.Http;
 using System.IO;
-using Microsoft.AspNetCore.Hosting;
+using System;
 
 namespace Healthy_Recipes.Controllers
 {
@@ -23,7 +26,22 @@ namespace Healthy_Recipes.Controllers
         public IActionResult Index()
         {
             var recipes = _context.Recipes.ToList();
-            return View(recipes);
+            var viewModels = recipes.Select(r => new RecipeViewModel
+            {
+                Id = r.Id,
+                Title = r.Title,
+                Description = r.Description,
+                Category = r.Category,
+                PreparationTime = r.PreparationTime,
+                Ingredients = r.Ingredients,
+                Instructions = r.Instructions,
+                Calories = r.Calories,
+                Protein = r.Protein,
+                Carbohydrates = r.Carbohydrates,
+                Fat = r.Fat,
+                ImageUrl = r.ImageUrl
+            }).ToList();
+            return View(viewModels);
         }
 
         public IActionResult Create()
@@ -33,26 +51,41 @@ namespace Healthy_Recipes.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Recipe model, IFormFile Image)
+        public async Task<IActionResult> Create(RecipeViewModel model)
         {
             if (ModelState.IsValid)
             {
-                if (Image != null)
+                var recipe = new Recipe
+                {
+                    Title = model.Title,
+                    Description = model.Description,
+                    Category = model.Category,
+                    PreparationTime = model.PreparationTime,
+                    Ingredients = model.Ingredients,
+                    Instructions = model.Instructions,
+                    Calories = model.Calories,
+                    Protein = model.Protein,
+                    Carbohydrates = model.Carbohydrates,
+                    Fat = model.Fat,
+                    CreatedAt = DateTime.Now
+                };
+
+                if (model.Image != null)
                 {
                     var uploads = Path.Combine(_environment.WebRootPath, "uploads");
                     Directory.CreateDirectory(uploads);
-                    var fileName = Guid.NewGuid() + Path.GetExtension(Image.FileName);
+                    var fileName = Guid.NewGuid() + Path.GetExtension(model.Image.FileName);
                     var filePath = Path.Combine(uploads, fileName);
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
-                        await Image.CopyToAsync(stream);
+                        await model.Image.CopyToAsync(stream);
                     }
-                    model.ImageUrl = "/Uploads/" + fileName;
+                    recipe.ImageUrl = "/Uploads/" + fileName;
                 }
 
-                _context.Recipes.Add(model);
+                _context.Recipes.Add(recipe);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
             return View(model);
         }
@@ -64,12 +97,28 @@ namespace Healthy_Recipes.Controllers
             {
                 return NotFound();
             }
-            return View(recipe);
+
+            var viewModel = new RecipeViewModel
+            {
+                Id = recipe.Id,
+                Title = recipe.Title,
+                Description = recipe.Description,
+                Category = recipe.Category,
+                PreparationTime = recipe.PreparationTime,
+                Ingredients = recipe.Ingredients,
+                Instructions = recipe.Instructions,
+                Calories = recipe.Calories,
+                Protein = recipe.Protein,
+                Carbohydrates = recipe.Carbohydrates,
+                Fat = recipe.Fat,
+                ImageUrl = recipe.ImageUrl
+            };
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Recipe model, IFormFile Image)
+        public async Task<IActionResult> Edit(int id, RecipeViewModel model)
         {
             if (id != model.Id)
             {
@@ -78,21 +127,31 @@ namespace Healthy_Recipes.Controllers
 
             if (ModelState.IsValid)
             {
-                var recipe = _context.Recipes.Find(id);
+                var recipe = await _context.Recipes.FindAsync(id);
                 if (recipe == null)
                 {
                     return NotFound();
                 }
 
-                if (Image != null)
+                if (model.Image != null)
                 {
-                    var uploads = Path.Combine(_environment.WebRootPath, "Uploads");
+                    // Delete existing image if it exists
+                    if (!string.IsNullOrEmpty(recipe.ImageUrl))
+                    {
+                        var existingFilePath = Path.Combine(_environment.WebRootPath, recipe.ImageUrl.TrimStart('/'));
+                        if (System.IO.File.Exists(existingFilePath))
+                        {
+                            System.IO.File.Delete(existingFilePath);
+                        }
+                    }
+
+                    var uploads = Path.Combine(_environment.WebRootPath, "uploads");
                     Directory.CreateDirectory(uploads);
-                    var fileName = Guid.NewGuid() + Path.GetExtension(Image.FileName);
+                    var fileName = Guid.NewGuid() + Path.GetExtension(model.Image.FileName);
                     var filePath = Path.Combine(uploads, fileName);
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
-                        await Image.CopyToAsync(stream);
+                        await model.Image.CopyToAsync(stream);
                     }
                     recipe.ImageUrl = "/Uploads/" + fileName;
                 }
@@ -107,10 +166,11 @@ namespace Healthy_Recipes.Controllers
                 recipe.Protein = model.Protein;
                 recipe.Carbohydrates = model.Carbohydrates;
                 recipe.Fat = model.Fat;
+                recipe.UpdatedAt = DateTime.Now;
 
                 _context.Update(recipe);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
             return View(model);
         }
@@ -125,9 +185,21 @@ namespace Healthy_Recipes.Controllers
                 return NotFound();
             }
 
+            // Delete associated image if it exists
+            if (!string.IsNullOrEmpty(recipe.ImageUrl))
+            {
+                var filePath = Path.Combine(_environment.WebRootPath, recipe.ImageUrl.TrimStart('/'));
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+            }
+
             _context.Recipes.Remove(recipe);
             await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
+
+
     }
 }

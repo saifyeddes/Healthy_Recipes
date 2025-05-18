@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations;
 
 namespace Healthy_Recipes.Models
 {
-    public class Users : IdentityUser 
+    public class Users : IdentityUser
     {
-        [Required]
-        public string FullName { get; set; } = string.Empty;
+        public required string FullName { get; set; }
     }
 }
