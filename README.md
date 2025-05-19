@@ -1,4 +1,4 @@
-Description du site Web : Healthy Recipes 🍎🥗
+Healthy Recipes 🍎🥗
 Bienvenue sur Healthy Recipes, votre plateforme dédiée aux recettes saines et équilibrées ! Que vous soyez amateur de cuisine ou chef professionnel, notre site vous offre une expérience simple et intuitive pour découvrir, partager et gérer des recettes santé.
 
 Fonctionnalités principales :
